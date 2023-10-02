@@ -347,7 +347,6 @@ exports.mobileCheckOut = async (req, res) => {
     const { referenceLat, referenceLon, targetLat, targetLon, attendaceID, clockOut } = req.body
     const getSetting = await Setting.findOne({ _id: Config.settingID })
     if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
-    if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
     if (getSetting.referenceLat && getSetting.referenceLon) {
       const distance = calculateDistance(referenceLat, referenceLon, targetLat, targetLon);
       if (distance <= 100) {
