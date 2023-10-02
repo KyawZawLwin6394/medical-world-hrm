@@ -344,11 +344,11 @@ exports.mobileCheckIn = async (req, res) => {
 
 exports.mobileCheckOut = async (req, res) => {
   try {
-    const { referenceLat, referenceLon, targetLat, targetLon, attendaceID, clockOut } = req.body
+    const { targetLat, targetLon, attendaceID, clockOut } = req.body
     const getSetting = await Setting.findOne({ _id: Config.settingID })
     if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
     if (getSetting.referenceLat && getSetting.referenceLon) {
-      const distance = calculateDistance(referenceLat, referenceLon, targetLat, targetLon);
+      const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
       if (distance <= 100) {
         const result = await Attendance.findOneAndUpdate({ _id: attendaceID }, { clockOut: clockOut }, { new: true }).populate('relatedUser relatedDepartment')
         return res.status(200).send({ success: true, message: 'Within 100 meter', data: result })
