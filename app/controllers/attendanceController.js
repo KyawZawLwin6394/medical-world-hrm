@@ -369,6 +369,6 @@ exports.mobileAttendanceDetail = async (req, res) => {
   const startDate = new Date(Date.UTC(new Date().getFullYear(), monthIndex, 1));
   const endDate = new Date(Date.UTC(new Date().getFullYear(), monthIndex + 1, 0, 23, 59, 59, 999));
   const employeeResult = await Employee.find({ _id: relatedEmployee }).select('casualLeaves medicalLeaves vacationLeaves maternityLeaveMale maternityLeaveFemale')
-  const attendanceResult = await Attendance.find({ date: { $gte: startDate.toISOString(), $lte: endDate.toISOString() }, relatedUser: relatedEmployee })
+  const attendanceResult = await Attendance.find({ date: { $gte: startDate.toISOString(), $lte: endDate.toISOString() }, relatedUser: relatedEmployee, isDeleted: false })
   return res.status(200).send({ success: true, employee: employeeResult[0], data: attendanceResult })
 }
