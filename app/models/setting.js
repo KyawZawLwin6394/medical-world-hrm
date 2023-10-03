@@ -14,7 +14,23 @@ let SettingSchema = new Schema({
     refAddress: {
         type: String
     },
-    penalty: [{
+    fstpenalty: {
+        pName: {
+            type: String
+        },
+        pTime: {
+            type: String
+        },
+        pPercent: {
+            type: Number,
+            default: 0
+        },
+        pAmount: {
+            type: Number,
+            default: 0
+        }
+    },
+    secpenalty: {
         pName: {
             type: String
         },
@@ -23,8 +39,54 @@ let SettingSchema = new Schema({
         },
         pPercent: {
             type: Number
+        },
+        pPercent: {
+            type: Number,
+            default: 0
+        },
+        pAmount: {
+            type: Number,
+            default: 0
         }
-    }]
+    },
+    thdpenalty: {
+        pName: {
+            type: String
+        },
+        pTime: {
+            type: String
+        },
+        pPercent: {
+            type: Number
+        },
+        pPercent: {
+            type: Number,
+            default: 0
+        },
+        pAmount: {
+            type: Number,
+            default: 0
+        }
+    },
+    fnlpenalty: {
+        pName: {
+            type: String
+        },
+        pTime: {
+            type: String
+        },
+        pPercent: {
+            type: Number
+        },
+        pPercent: {
+            type: Number,
+            default: 0
+        },
+        pAmount: {
+            type: Number,
+            default: 0
+        }
+    }
 });
 
 SettingSchema.pre('save', function (next) {
