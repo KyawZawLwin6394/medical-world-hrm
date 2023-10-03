@@ -330,7 +330,8 @@ exports.mobileCheckIn = async (req, res) => {
           clockIn: clockIn,
           isPaid: true,
           type: 'Attend',
-          source: 'Field'
+          source: 'Field',
+          attendType: "Week Day"
         })
         return res.status(200).send({ success: true, message: 'Within 100 meter', data: result })
       } else {
