@@ -17,6 +17,8 @@ module.exports = (app) => {
     .delete(verifyToken, catchError(user.deleteUser))
     .post(verifyToken, catchError(user.activateUser));
 
+  app.route('/api/users/reset').put(verifyToken, catchError(user.resetPassword))
+
   app
     .route('/api/users/department')
     .get(verifyToken, catchError(user.getEmployeeByDepartmentID))

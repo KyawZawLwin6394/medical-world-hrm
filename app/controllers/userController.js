@@ -1,6 +1,20 @@
 'use strict'
-const User = require('../models/user')
-const Attachment = require('../models/attachment')
+const User = require('../models/user');
+const Attachment = require('../models/attachment');
+const bcryptHash = require('../lib/userUtil').bcryptHash;
+
+exports.resetPassword = async (req, res) => {
+  try {
+    const { email, password } = req.body;
+    if (!password || !email) return res.status(404).send({ error: true, message: 'Password/Email Not Found!' })
+    const encryptedPassword = await bcryptHash(password)
+    console.log(encryptedPassword)
+    const updatePassword = await User.findOneAndUpdate({ email: email }, { password: encryptedPassword }, { new: true })
+    return res.status(200).send({ success: true, newPassword: password })
+  } catch (error) {
+    return res.status(500).send({ error: true, message: error.message })
+  }
+}
 
 exports.createUser = async (req, res) => {
   try {
