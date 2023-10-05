@@ -6,16 +6,12 @@ const bcryptHash = require('../lib/userUtil').bcryptHash;
 exports.resetPassword = async (req, res) => {
   try {
     const { email, password } = req.body;
-    if (!password || !email) return res.status(200).send({ error: true, message: 'Password/Email Not Found!' })
+    if (!password || !email) return res.status(404).send({ error: true, message: 'Password/Email Not Found!' })
     const encryptedPassword = await bcryptHash(password)
     console.log(encryptedPassword)
-    const updatePassword = await User.findOneAndUpdate({ email: email }, { password: encryptedPassword }, { new: true }).then(() => {
-      return res.status(200).send({ success: true, newPassword: password })
-    }).catch(() => {
-      return res.status(200).send({ error: true, message: 'Email Not Found!' })
-    })
-
-
+    const updatePassword = await User.findOneAndUpdate({ email: email }, { password: encryptedPassword }, { new: true })
+    if (!updatePassword) return res.status(200).send({ error: true, message: 'Email Not Found!' })
+    return res.status(200).send({ success: true, newPassword: password })
   } catch (error) {
     return res.status(500).send({ error: true, message: error.message })
   }
