@@ -10,6 +10,7 @@ exports.resetPassword = async (req, res) => {
     const encryptedPassword = await bcryptHash(password)
     console.log(encryptedPassword)
     const updatePassword = await User.findOneAndUpdate({ email: email }, { password: encryptedPassword }, { new: true })
+    if (!updatePassword) return res.status(200).send({ error: true, message: 'Email Not Found!' })
     return res.status(200).send({ success: true, newPassword: password })
   } catch (error) {
     return res.status(500).send({ error: true, message: error.message })
