@@ -12,6 +12,7 @@ const months = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'S
 
 exports.createAttendance = async (req, res) => {
   let data = req.body
+ 
   try {
     let result = await Attendance.create(data)
     res.status(200).send({
@@ -26,12 +27,14 @@ exports.createAttendance = async (req, res) => {
 
 exports.listAllAttendances = async (req, res) => {
   let { keyword, role, limit, skip, rowsPerPage, } = req.query
+
   let count = 0
-  let page = 0
+  let page = 0  
   try {
     limit = +limit <= 100 ? +limit : 10
     skip = +skip || 0
-    let query = { isDeleted: false },
+    let query = { isDeleted: false }
+    console.log("querry of power is "+JSON.stringify(query))
       regexKeyword
     role ? (query['role'] = role.toUpperCase()) : ''
     keyword && /\w/.test(keyword)

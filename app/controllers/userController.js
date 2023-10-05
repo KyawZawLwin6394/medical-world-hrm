@@ -152,6 +152,7 @@ exports.getUserDetail = async (req, res) => {
 exports.updateUser = async (req, res, next) => {
   let data = req.body
   const files = req.files
+  
   try {
     const attachments = []
     const attachmentTypes = ['cv', 'edu', 'recLet', 'other', 'pf', 'married']
@@ -165,6 +166,13 @@ exports.updateUser = async (req, res, next) => {
     }
     console.log(files, 'here')
     // console.log(data, 'data')
+
+    //update password
+    if(data.password){
+       let updatePassword = await bcryptHash(data.password)
+       data['password'] = updatePassword
+    }
+
     for (const type of attachmentTypes) {
       if (files[type]) {
         for (const item of files[type]) {

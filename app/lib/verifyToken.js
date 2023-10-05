@@ -14,6 +14,7 @@ function verifyToken(req, res, next) {
         .status(500)
         .send({ auth: false, message: 'Failed to authenticate token.' });
     }
+    console.log("decoded is "+decoded)
     // if everything good, save to request for use in other routes
     let credentials = decodedCredentials(decoded);
     req['credentials'] = credentials;
