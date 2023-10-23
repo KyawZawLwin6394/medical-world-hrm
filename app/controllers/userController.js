@@ -80,7 +80,7 @@ exports.createUser = async (req, res) => {
 exports.getEmployeeByDepartmentID = async (req, res) => {
   const { dep } = req.query
   try {
-    const employeeResult = await User.find({ relatedDepartment: dep })
+    const employeeResult = await User.find({ relatedDepartment: dep }).populate("relatedPosition")
     if (employeeResult.length === 0) return res.status(404).send({ error: true, message: 'Not Found!' })
     return res.status(200).send({ success: true, data: employeeResult })
   } catch (error) {
@@ -133,7 +133,7 @@ exports.listAllUsers = async (req, res) => {
 exports.getUserDetail = async (req, res) => {
   try {
     let result = await User.findById(req.params.id).populate(
-      'profile educationCertificate CV other recommendationLetter relatedPosition married'
+      "profile educationCertificate CV other recommendationLetter married relatedPosition"
     ).populate({
       path: 'relatedDepartment',
       model: 'Departments',
@@ -153,8 +153,9 @@ exports.getUserDetail = async (req, res) => {
 exports.updateUser = async (req, res, next) => {
   let data = req.body
   const files = req.files
-  
+  console.log("updated from promete is "+JSON.stringify(data))
   try {
+    
     const attachments = []
     const attachmentTypes = ['cv', 'edu', 'recLet', 'other', 'pf', 'married']
     const attachmentMappings = {
@@ -173,7 +174,7 @@ exports.updateUser = async (req, res, next) => {
        let updatePassword = await bcryptHash(data.password)
        data['password'] = updatePassword
     }
-
+   if(files){
     for (const type of attachmentTypes) {
       if (files[type]) {
         for (const item of files[type]) {
@@ -196,7 +197,6 @@ exports.updateUser = async (req, res, next) => {
     //   console.log(attachment.type)
     //   data[attachmentMappings[attachment.type]] = attachments;
     // }
-
     for (const attachment of attachments) {
       const { type, id } = attachment
 
@@ -208,7 +208,8 @@ exports.updateUser = async (req, res, next) => {
         }
       }
     }
-    console.log(data)
+  }
+    console.log("updated user data is " + JSON.stringify(data))
     let result = await User.findOneAndUpdate(
       { _id: data.id },
       data,

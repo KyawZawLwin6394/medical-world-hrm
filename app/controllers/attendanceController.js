@@ -33,14 +33,17 @@ exports.listAllAttendances = async (req, res) => {
   try {
     limit = +limit <= 100 ? +limit : 10
     skip = +skip || 0
-    let query = { isDeleted: false }
-    console.log("querry of power is "+JSON.stringify(query))
+    let query = { isDeleted: false },
       regexKeyword
-    role ? (query['role'] = role.toUpperCase()) : ''
+    role ? (query['role'] = role.toUpperCase()) : ''  
+   
     keyword && /\w/.test(keyword)
       ? (regexKeyword = new RegExp(keyword, 'i'))
       : ''
+
     regexKeyword ? (query['name'] = regexKeyword) : ''
+
+  
     let result = await Attendance.find(query)
       .skip(skip)
       .limit(limit)
