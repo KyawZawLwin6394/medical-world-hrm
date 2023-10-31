@@ -31,7 +31,7 @@ exports.listAllAttendances = async (req, res) => {
   let count = 0
   let page = 0  
   try {
-    limit = +limit <= 100 ? +limit : 10
+   // limit = +limit <= 100 ? +limit : 10
     skip = +skip || 0
     let query = { isDeleted: false },
       regexKeyword
@@ -46,10 +46,10 @@ exports.listAllAttendances = async (req, res) => {
   
     let result = await Attendance.find(query)
       .skip(skip)
-      .limit(limit)
-      .populate('relatedDepartment relatedUser')
+      .populate('relatedDepartment relatedUser') 
+      //.limit(limit)
     count = await Attendance.find(query).count()
-    const division = count / (rowsPerPage || limit)
+    const division = count / (rowsPerPage ) //|| limit)
     page = Math.ceil(division)
     let unpaid = await Attendance.find(query).count()
     res.status(200).send({
@@ -57,8 +57,8 @@ exports.listAllAttendances = async (req, res) => {
       count: count,
       unpaidCount: unpaid,
       _metadata: {
-        current_page: skip / limit + 1,
-        per_page: limit,
+      //  current_page: skip / limit + 1,
+       // per_page: limit,
         page_count: page,
         total_count: count
       },
