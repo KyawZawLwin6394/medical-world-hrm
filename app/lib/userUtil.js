@@ -21,9 +21,13 @@ async function attendanceExcelImport(filePath) {
       let treatmentName = row.getCell(7).value;
       try {
         const employeeName = row.getCell(4).value
-        const filtered = employeeName ? employeeName.split(' (KWD)')[0] : ''
-        const relatedUser = await User.findOne({ givenName: filtered });
-        // console.log(relatedUser, filtered)
+       // const no = row.getCell(0).value
+        const employeeNo = row.getCell(2).value
+        const filtered = employeeName ? employeeName.split(' (MDW)')[0] : ''
+        const relatedUser = await User.findOne({ 
+          givenName: filtered //employeeName
+        });
+     //   console.log("employee Names "+employeeName)
         if (relatedUser) {
           // console.log(relatedUser)
           const rowData = {
@@ -37,7 +41,10 @@ async function attendanceExcelImport(filePath) {
             isPaid: true,
             relatedDepartment: relatedUser.relatedDepartment
           };
-          data.push(rowData);
+          data.push(rowData); 
+        //   console.log("employee Number "+employeeNo)
+        // //  console.log("Numb "+no)
+        //   console.log("employee Name "+relatedUser.givenName)
         }
         // else if (relatedUser && row.getCell(10).value === '') {
         //   console.log('undefined')
