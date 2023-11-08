@@ -79,7 +79,7 @@ exports.getAttendanceDetail = async (req, res) => {
     res.json({ success: true, data: result })
   } catch (error) {
     return res.status(500).send({ error: true, message: error.message })
-  }
+  } 
 }
 
 exports.updateAttendance = async (req, res, next) => {
