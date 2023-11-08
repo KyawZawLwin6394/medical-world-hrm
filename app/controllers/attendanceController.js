@@ -26,24 +26,34 @@ exports.createAttendance = async (req, res) => {
 }
 
 exports.listAllAttendances = async (req, res) => {
-  let { keyword, role, limit, skip, rowsPerPage, } = req.query
+  let { keyword, role, limit, skip, rowsPerPage,relatedDepartment,type,fromDate,toDate } = req.query
 
   let count = 0
   let page = 0  
+  
+  fromDate ? fromDate = new Date(fromDate) : ""
+  toDate ? toDate = new Date(toDate) : ""
+ // console.log("department is "+relatedDepartment+" "+type+" "+fromDate+" "+toDate)
   try {
    // limit = +limit <= 100 ? +limit : 10
     skip = +skip || 0
     let query = { isDeleted: false },
       regexKeyword
     role ? (query['role'] = role.toUpperCase()) : ''  
-   
+    relatedDepartment  ? (query['relatedDepartment'] = relatedDepartment) : ""
+    type ? (query['type'] = type ) : ""
+    fromDate && toDate ? ( query["date"] = {"$gte": fromDate,"$lte": toDate}) 
+                        : fromDate ? ( query["date"] = {"$gte": fromDate}) 
+                        : toDate ? ( query["date"] = {"$lte": toDate}) 
+                        : ""
+
     keyword && /\w/.test(keyword)
       ? (regexKeyword = new RegExp(keyword, 'i'))
       : ''
 
     regexKeyword ? (query['name'] = regexKeyword) : ''
 
-  
+    console.log("queery is ",query)
     let result = await Attendance.find(query)
       .skip(skip)
       .populate('relatedDepartment relatedUser') 
