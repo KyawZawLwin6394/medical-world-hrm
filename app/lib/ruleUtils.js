@@ -5,38 +5,57 @@ const Setting = require('../models/setting');
 
 const capitalize = str => str.charAt(0).toUpperCase() + str.slice(1);
 const convertAndDisplayTZ = utcDate => moment.utc(utcDate).tz(config.timeZone).format('D-M-Y');
-const convertToWeekDayNames = utcDate => moment.utc(utcDate).tz(config.timeZone).format('ddd');
+const convertToWeekDayNames = utcDate => moment.utc(utcDate).tz(config.timeZone).format("ddd");
 const attendanceInputDate = utcDate => moment.utc(utcDate).tz(config.timeZone).format('YYYY-MM-DD');
 
 const calculatePenalty = (name, settings, salaryPerDay) => settings[name].pAmount > 0 ? settings[name].pAmount : (settings[name].pPercent * salaryPerDay) / 100;
 
 const checkEmployeeAttendance = (inputTimeStr, settings, salaryPerDay) => {
-    const [inputHours, inputMinutes] = inputTimeStr.split(":").map(Number);
+    const [inputHours, inputMinutes] = inputTimeStr.split(":")//.map(Number);//
+
     let salary = salaryPerDay;
-    if (isLate(inputHours, inputMinutes, settings.fnlpenalty.pTime)) salary -= calculatePenalty('fnlpenalty', settings, salaryPerDay);
-    else if (isLate(inputHours, inputMinutes, settings.thdpenalty.pTime)) salary -= calculatePenalty('thdpenalty', settings, salaryPerDay);
-    else if (isLate(inputHours, inputMinutes, settings.secpenalty.pTime)) salary -= calculatePenalty('secpenalty', settings, salaryPerDay);
-    else if (isLate(inputHours, inputMinutes, settings.fstpenalty.pTime)) salary -= calculatePenalty('fstpenalty', settings, salaryPerDay);
-    else console.log("The employee is on time or early.", inputTimeStr);
+    if (isLate(inputHours, inputMinutes, settings.fnlpenalty.pTime))
+       {
+        salary -= calculatePenalty('fnlpenalty', settings, salaryPerDay);
+       } 
+    else if (isLate(inputHours, inputMinutes, settings.thdpenalty.pTime)) 
+       {
+        salary -= calculatePenalty('thdpenalty', settings, salaryPerDay);
+       }
+    else if (isLate(inputHours, inputMinutes, settings.secpenalty.pTime)) 
+       {
+        salary -= calculatePenalty('secpenalty', settings, salaryPerDay);
+       }
+    else if (isLate(inputHours, inputMinutes, settings.fstpenalty.pTime)) 
+       {
+        salary -= calculatePenalty('fstpenalty', settings, salaryPerDay);
+       }
+    else 
+       {
+        console.log("The employee is on time or early.", inputTimeStr);
+       }
+    console.log("aloiedf "+salary)
     return salary;
 };
 
 const isLate = (inputHours, inputMinutes, thresholdTimeStr) => {
-    const [thresholdHours, thresholdMinutes] = thresholdTimeStr.split(":").map(Number);
+    const [thresholdHours, thresholdMinutes] = thresholdTimeStr.split(":");//.map(Number);
     return inputHours > thresholdHours || (inputHours === thresholdHours && inputMinutes > thresholdMinutes);
 };
 
 exports.calculatePayroll = async (attendances, salaryPerDay, workingDays) => {
     try {
-        const settings = await Setting.find({ _id: '651a47a7e259234bf081204c' });
+        const settings = await Setting.findById('651a47a7e259234bf081204c');
         if (!settings) return { error: true, message: 'Settings Not Found!' };
-        const entitledSalary = attendances
-            .filter(item => item.isPaid)
-            .reduce((acc, day) => {
+        const entitledSalary = attendances.filter(item => item.isPaid).reduce((acc, day) => {
                 const dayName = convertToWeekDayNames(day.date);
+                // if( workingDays.includes(dayName)) {
+                //     acc +=1
+                //     console.log("salur "+acc)
+                // }
                 return acc + (
                     (day.clockIn && workingDays.includes(dayName))
-                        ? checkEmployeeAttendance(day.clockIn, settings[0], salaryPerDay)
+                        ? (checkEmployeeAttendance(day.clockIn, settings, salaryPerDay))
                         : (!workingDays.includes(dayName) || day.attendType === 'Day Off')
                             ? acc + salaryPerDay
                             : (workingDays.includes(dayName) && !day.clockIn)
@@ -44,6 +63,7 @@ exports.calculatePayroll = async (attendances, salaryPerDay, workingDays) => {
                                 : 0
                 );
             }, 0);
+          //  console.log("salary is "+ entitledSalary)
         return { success: true, salary: entitledSalary };
     } catch (error) {
         return { success: false, message: error.message };

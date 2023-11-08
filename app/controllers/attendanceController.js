@@ -197,24 +197,34 @@ exports.attendanceDetail = async (req, res) => {
 exports.calculatePayroll = async (req, res) => {
   try {
     const { dep, emp, basicSalary, month, saveStatus } = req.body;
+    
     if (!(dep && emp && basicSalary && month)) return res.status(200).send({ error: true, message: 'Department, Employee, Month, and BasicSalary are needed!' });
+    console.log("related is ")
     const totalDays = new Date((await UserUtil.getDatesByMonth(month)).$lte).getUTCDate();
+   // console.log("totalDay is "+totalDays)
+
     const dates = await UserUtil.getDatesByMonth(month);
-    const result = await Attendance.find({ relatedDepartment: dep, relatedUser: emp, date: dates }).sort({ date: 1 }).populate('relatedDepartment relatedUser');
+    const result = await Attendance.find({ relatedDepartment: dep, relatedUser: emp }).sort({ date: 1 }).populate('relatedDepartment relatedUser').where({ date: dates});
+  
     if (!result.length) return res.status(200).send({ error: true, message: 'Not Found!', data: { attendedSalary: 0, dismissedSalary: 0, entitledSalary: 0, totalAttendance: 0, paid: 0, unpaid: 0 } });
     const totalAttendance = result.length;
     const salaryPerDay = basicSalary / totalDays;
-    const { workingDay } = await Employee.findOne({ _id: emp }).populate('relatedPosition');
+    let employee = await Employee.findById( emp ).populate('relatedPosition');
+    const workingDay  = employee.relatedPosition.workingDay;
     const [attendedDays, dismissedDays] = [result.filter(item => item.isPaid && item.type === 'Attend'), result.filter(item => !item.isPaid && item.type === 'Dismiss')];
-    const [attendedSalary, dismissedSalary] = [RuleUtil.calculatePayroll(attendedDays, salaryPerDay, workingDay), RuleUtil.calculatePayroll(dismissedDays, salaryPerDay, workingDay)];
+    const attendedSalary = await RuleUtil.calculatePayroll(attendedDays, salaryPerDay, workingDay);
+    const dismissedSalary = await RuleUtil.calculatePayroll(dismissedDays, salaryPerDay, workingDay) ;
+   // dismissedSalary, RuleUtil.calculatePayroll(dismissedDays, salaryPerDay, workingDay)
     if (!attendedSalary.success) return res.status(200).send({ error: true, message: attendedSalary.message });
     if (!dismissedSalary.success) return res.status(200).send({ error: true, message: dismissedSalary.message });
-    const paidCount = totalAttendance - dismissedDays.length;
-    if (saveStatus === true) {
-      const payroll = await PayRoll.find({ relatedUser: emp, relatedDepartment: dep, month: month });
-      if (!payroll.length) await PayRoll.create({ entitledSalary: Math.round(attendedSalary.salary - (dismissedSalary.salary || 0)), relatedUser: emp, relatedDepartment: dep, totalAttendance: totalAttendance, attendedSalary: Math.round(attendedSalary.salary), dismissedSalary: Math.round(dismissedSalary.salary), paidDays: paidCount, unpaidDays: dismissedDays.length, month: month });
-    }
-    return res.status(200).send({ success: true, data: { attendedSalary: Math.round(attendedSalary.salary), dismissedSalary: Math.round(dismissedSalary.salary), entitledSalary: Math.round(attendedSalary.salary - (dismissedSalary.salary || 0)), totalAttendance: totalAttendance, paid: paidCount, unpaid: dismissedDays.length } });
+    
+  //   if (saveStatus === true) {
+  //     const payroll = await PayRoll.find({ relatedUser: emp, relatedDepartment: dep, month: month });
+     
+  //     if (!payroll.length) await PayRoll.create({ entitledSalary: Math.round(attendedSalary.salary - (dismissedSalary.salary || 0)), relatedUser: emp, relatedDepartment: dep, totalAttendance: totalAttendance, attendedSalary: Math.round(attendedSalary.salary), dismissedSalary: Math.round(dismissedSalary.salary), paidDays: paidCount, unpaidDays: dismissedDays.length, month: month });
+    
+  // }
+    return res.status(200).send({ success: true, data: { attendedSalary: Math.round(attendedSalary.salary), dismissedSalary: Math.round(dismissedSalary.salary), entitledSalary: Math.round(attendedSalary.salary - (dismissedSalary.salary || 0)), totalAttendance: totalAttendance,  unpaid: dismissedDays.length } });
   } catch (error) {
     console.log(error);
     return res.status(200).send({ error: true, message: error.message });

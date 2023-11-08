@@ -171,6 +171,7 @@ exports.updateUser = async (req, res, next) => {
 
     //update password
     if(data.password){
+       console.log("data of password is "+data.password)
        let updatePassword = await bcryptHash(data.password)
        data['password'] = updatePassword
     }

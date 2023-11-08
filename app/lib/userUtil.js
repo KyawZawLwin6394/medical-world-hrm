@@ -27,7 +27,7 @@ async function attendanceExcelImport(filePath) {
         const relatedUser = await User.findOne({ 
           givenName: filtered //employeeName
         });
-     //   console.log("employee Names "+employeeName)
+       // console.log("employee Names "+employeeName)
         if (relatedUser) {
           // console.log(relatedUser)
           const rowData = {
@@ -99,7 +99,7 @@ async function getDatesByMonth(month) {
   // Create moment objects in the 'Asia/Rangoon' timezone
   const startDate = moment.tz([year, monthIndex], 'Asia/Rangoon');
   const endDate = startDate.clone().endOf('month');
-
+  console.log("")
   // Convert to ISO string format
   return { $gte: startDate.toISOString(), $lte: endDate.toISOString() };
 }
