@@ -21,7 +21,6 @@ exports.createPayroll = async (req, res) => {
   //                            unpaidDays: dismissedDays.length, 
   //                            month: month 
   //                           });
-    
     if(!payroll.length){
       let result = await Payroll.create(data);
       res.status(200).send({
