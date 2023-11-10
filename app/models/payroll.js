@@ -72,6 +72,13 @@ let PayrollSchema = new Schema({
     type: Number,
     default: 0
   },
+  reductionReason:{
+    type:String
+  },
+  reductionAmount:{
+    type:Number,
+    default:0
+  },
   incomeTaxPercent: {
     type: String
   },
