@@ -299,7 +299,7 @@ exports.mobileCheckIn = async (req, res) => {
     if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
     if (getSetting.referenceLat && getSetting.referenceLon) {
       const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
-      if (distance <= 100) {
+      if (distance <= 120) {
         const result = await Attendance.create({
           relatedUser: relatedEmployee,
           relatedDepartment: relatedDepartment,
@@ -310,7 +310,7 @@ exports.mobileCheckIn = async (req, res) => {
           source: 'Field',
           attendType: "Week Day"
         })
-        return res.status(200).send({ success: true, message: 'Within 100 meter', data: result })
+        return res.status(200).send({ success: true, message: 'Within 120 meter', data: result })
       } else {
         return res.status(200).send({ error: true, message: `Out of Bound for this Address:${getSetting.refAddress}, Please Try Again!` })
       }
@@ -327,9 +327,9 @@ exports.mobileCheckOut = async (req, res) => {
     if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
     if (getSetting.referenceLat && getSetting.referenceLon) {
       const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
-      if (distance <= 100) {
+      if (distance <= 120) {
         const result = await Attendance.findOneAndUpdate({ _id: attendaceID }, { clockOut: clockOut }, { new: true }).populate('relatedUser relatedDepartment')
-        return res.status(200).send({ success: true, message: 'Within 100 meter', data: result })
+        return res.status(200).send({ success: true, message: 'Within 120 meter', data: result })
       } else {
         return res.status(200).send({ error: true, message: `Out of Bound for this Address:${getSetting.refAddress}, Please Try Again!` })
       }
