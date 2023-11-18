@@ -299,7 +299,7 @@ exports.mobileCheckIn = async (req, res) => {
     if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
     if (getSetting.referenceLat && getSetting.referenceLon) {
       const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
-      if (distance <= 120) {
+      if (distance <= 300) {
         const result = await Attendance.create({
           relatedUser: relatedEmployee,
           relatedDepartment: relatedDepartment,
