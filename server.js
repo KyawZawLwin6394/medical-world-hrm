@@ -10,7 +10,7 @@ const express = require('express'),
   config = require('./config/db'),
   app = express(),
   server = require('http').Server(app),
-  port = 9000;
+  port = 5000;
 app.use(cors({ origin: '*' }));
 
 //mongoose.set('useCreateIndex', true) // to remove -> DeprecationWarning: collection.ensureIndex is deprecated. Use createIndex instead.
