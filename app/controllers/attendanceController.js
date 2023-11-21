@@ -46,7 +46,7 @@ exports.listAllAttendances = async (req, res) => {
                         : fromDate ? ( query["date"] = {"$gte": fromDate}) 
                         : toDate ? ( query["date"] = {"$lte": toDate}) 
                         : ""
-
+    relatedUser ? (query['relatedUser'] = relatedUser) : ""
     keyword && /\w/.test(keyword)
       ? (regexKeyword = new RegExp(keyword, 'i'))
       : ''
