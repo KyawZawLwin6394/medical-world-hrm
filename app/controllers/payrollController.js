@@ -272,3 +272,39 @@ exports.calculatePayroll = async (req, res) => {
     return res.status(500).send({ error: true, message: error.message })
   }
 }
+
+exports.getTotalAmountByMonth = async (req,res) =>{
+  let labels = ['Jan', 'Feb', 'March', 'April', 'May', 'June', 'July', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+ 
+  let totalAmounts = [];
+  let datas ={
+    labels: labels,
+  }; 
+  datas.datasets = []
+  
+  datas.datasets.push({
+    label:"Total Salary",
+    backgroundColor: "rgb(155, 99, 192)",
+    borderColor: "rgb(155, 99, 182)",
+  })
+  
+  let results =  await Payroll.find();
+  // 
+  let totalResult = results.reduce((total,result)=>{ 
+     let month = result.month;
+     total[month] = (total[month] || 0)+ (result.netSalary !=0 ? result.netSalary : result.entitledSalary)
+     return total;
+    
+  },{})
+
+  labels.map(month =>{
+   totalResult[month] ? totalAmounts.push(totalResult[month]) : totalAmounts.push(0)
+  })
+  //  console.log("amount",totalAmounts)
+  
+  datas.datasets[0].data=totalAmounts
+  return res.status(200).send({
+    success: true,
+    data: datas
+  })
+}
