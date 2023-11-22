@@ -9,6 +9,11 @@ module.exports = (app) => {
         .route('/api/payroll')
         .post(verifyToken, catchError(payroll.createPayroll))
         .put(verifyToken, catchError(payroll.updatePayroll));
+    
+    //get all payroll amount by month
+    app 
+       .route("/api/payroll/month")
+       .get(verifyToken, catchError(payroll.getTotalAmountByMonth))
 
     app
         .route('/api/payroll/:id')
