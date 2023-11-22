@@ -26,7 +26,7 @@ exports.createAttendance = async (req, res) => {
 }
 
 exports.listAllAttendances = async (req, res) => {
-  let { keyword, role, limit, skip, rowsPerPage,relatedDepartment,type,fromDate,toDate } = req.query
+  let { keyword, role, limit, skip, rowsPerPage,relatedDepartment,type,fromDate,toDate, relatedUser } = req.query
 
   let count = 0
   let page = 0  
