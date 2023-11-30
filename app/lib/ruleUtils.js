@@ -34,7 +34,7 @@ const checkEmployeeAttendance = (inputTimeStr, settings, salaryPerDay) => {
        {
         console.log("The employee is on time or early.", inputTimeStr);
        }
-    console.log("aloiedf "+salary)
+    // console.log("aloiedf "+salary)
     return salary;
 };
 
@@ -49,6 +49,7 @@ exports.calculatePayroll = async (attendances, salaryPerDay, workingDays) => {
         if (!settings) return { error: true, message: 'Settings Not Found!' };
         const entitledSalary = attendances.filter(item => item.isPaid).reduce((acc, day) => {
                 const dayName = convertToWeekDayNames(day.date);
+                console.log("dayaname ",day.clockIn)
                 // if( workingDays.includes(dayName)) {
                 //     acc +=1
                 //     console.log("salur "+acc)
@@ -63,7 +64,7 @@ exports.calculatePayroll = async (attendances, salaryPerDay, workingDays) => {
                                 : 0
                 );
             }, 0);
-          //  console.log("salary is "+ entitledSalary)
+           console.log("salary is "+ entitledSalary)
         return { success: true, salary: entitledSalary };
     } catch (error) {
         return { success: false, message: error.message };

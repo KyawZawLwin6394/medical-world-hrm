@@ -94,9 +94,9 @@ exports.listAllUsers = async (req, res) => {
   let count = 0
   let page = 0
   try {
-    limit = +limit <= 100 ? +limit : 10
+    // limit = +limit <= 100 ? +limit : 10
     skip = +skip || 0
-    let query = { isDeleted: false },
+    let query = {isDeleted:false },
       regexKeyword
     role ? (query['role'] = role.toUpperCase()) : ''
     keyword && /\w/.test(keyword)
@@ -104,22 +104,20 @@ exports.listAllUsers = async (req, res) => {
       : ''
     regexKeyword ? (query['name'] = regexKeyword) : ''
 
-    let result = await User.find(query)
-      .skip(skip)
-      .limit(limit)
+    let result = await User.find(query).skip(skip)
       .populate(
         'profile educationCertificate CV other recommendationLetter relatedDepartment relatedPosition married'
       )
     count = await User.find(query).count()
-    const division = count / (rowsPerPage || limit)
+    const division = count / (rowsPerPage )
     page = Math.ceil(division)
 
     res.status(200).send({
       success: true,
       count: count,
       _metadata: {
-        current_page: skip / limit + 1,
-        per_page: limit,
+        // current_page: skip / limit + 1,
+        // per_page: limit,
         page_count: page,
         total_count: count
       },
