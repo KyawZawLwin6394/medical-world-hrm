@@ -11,8 +11,9 @@ const attendanceInputDate = utcDate => moment.utc(utcDate).tz(config.timeZone).f
 const calculatePenalty = (name, settings, salaryPerDay) => settings[name].pAmount > 0 ? settings[name].pAmount : (settings[name].pPercent * salaryPerDay) / 100;
 
 const checkEmployeeAttendance = (inputTimeStr, settings, salaryPerDay) => {
+    let i =1
     const [inputHours, inputMinutes] = inputTimeStr.split(":")//.map(Number);//
-
+     console.log("this is checkEmplo",i)
     let salary = salaryPerDay;
     if (isLate(inputHours, inputMinutes, settings.fnlpenalty.pTime))
        {
@@ -35,6 +36,7 @@ const checkEmployeeAttendance = (inputTimeStr, settings, salaryPerDay) => {
         console.log("The employee is on time or early.", inputTimeStr);
        }
     // console.log("aloiedf "+salary)
+    i++
     return salary;
 };
 
@@ -45,23 +47,34 @@ const isLate = (inputHours, inputMinutes, thresholdTimeStr) => {
 
 exports.calculatePayroll = async (attendances, salaryPerDay, workingDays) => {
     try {
+        let totalSalary ;
         const settings = await Setting.findById('651a47a7e259234bf081204c');
         if (!settings) return { error: true, message: 'Settings Not Found!' };
         const entitledSalary = attendances.filter(item => item.isPaid).reduce((acc, day) => {
                 const dayName = convertToWeekDayNames(day.date);
-                console.log("dayaname ",day.clockIn)
+                
                 // if( workingDays.includes(dayName)) {
                 //     acc +=1
                 //     console.log("salur "+acc)
                 // }
+                
+                // if(day.clockIn && workingDays.includes(dayName)){
+                //     totalSalary = acc + checkEmployeeAttendance(day.clockIn, settings, salaryPerDay);
+                //     console.log("onda sal",oneDaySalary)
+                // }
+                // else if(!workingDays.includes(dayName) || day.attendType === 'Day Off'){
+                //      totalSalary += salaryPerDay
+                //      console.log("total Salry",totalSalary)
+                // }
+                
                 return acc + (
                     (day.clockIn && workingDays.includes(dayName))
                         ? (checkEmployeeAttendance(day.clockIn, settings, salaryPerDay))
                         : (!workingDays.includes(dayName) || day.attendType === 'Day Off')
-                            ? acc + salaryPerDay
-                            : (workingDays.includes(dayName) && !day.clockIn)
-                                ? acc
-                                : 0
+                            ? salaryPerDay
+                            // : (workingDays.includes(dayName) && !day.clockIn)
+                            //     ? acc
+                           : 0
                 );
             }, 0);
            console.log("salary is "+ entitledSalary)

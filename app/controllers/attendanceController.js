@@ -223,6 +223,7 @@ exports.calculatePayroll = async (req, res) => {
     let employee = await Employee.findById( emp ).populate('relatedPosition');
     const workingDay  = employee.relatedPosition.workingDay;
     const [attendedDays, dismissedDays] = [result.filter(item => item.isPaid && item.type === 'Attend'), result.filter(item => !item.isPaid && item.type === 'Dismiss')];
+    console.log("attendDays is ",attendedDays.length)
     const attendedSalary = await RuleUtil.calculatePayroll(attendedDays, salaryPerDay, workingDay);
     const dismissedSalary = await RuleUtil.calculatePayroll(dismissedDays, salaryPerDay, workingDay) ;
    // dismissedSalary, RuleUtil.calculatePayroll(dismissedDays, salaryPerDay, workingDay)
@@ -347,7 +348,7 @@ exports.mobileAttendanceDetail = async (req, res) => {
   const monthIndex = months.indexOf(month);
   const startDate = new Date(Date.UTC(new Date().getFullYear(), monthIndex, 1));
   const endDate = new Date(Date.UTC(new Date().getFullYear(), monthIndex + 1, 0, 23, 59, 59, 999));
-  const employeeResult = await Employee.find({ _id: relatedEmployee }).select('casualLeaves medicalLeaves vacationLeaves maternityLeaveMale maternityLeaveFemale')
+  const employeeResult = await Employee.find({ _id: relatedEmployee ,isDeleted:false}).select('casualLeaves medicalLeaves vacationLeaves maternityLeaveMale maternityLeaveFemale')
   const attendanceResult = await Attendance.find({ date: { $gte: startDate.toISOString(), $lte: endDate.toISOString() }, relatedUser: relatedEmployee, isDeleted: false })
   return res.status(200).send({ success: true, employee: employeeResult[0], data: attendanceResult })
 }
