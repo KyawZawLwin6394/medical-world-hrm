@@ -8,13 +8,12 @@ exports.listAllAppointments = async (req,res,next ) => {
              rowPerPage,
              fromDate, 
              toDate, 
-             relatedUser, 
+             relatedEmployee, 
              customerName, 
              phone, 
              status 
             } = req.query
-       let count
-
+       console.log(relatedEmployee)
        skip = skip || 0
        customerName ?  query["customerName"] = customerName : ""
        phone ? query["phone"] =  phone : ""
@@ -23,19 +22,19 @@ exports.listAllAppointments = async (req,res,next ) => {
                        : fromDate ? query["date"] = { $gte:new Date(fromDate)} 
                        : toDate ? query["date"] = { $lte: new Date(toDate)} 
                        : ""
-       relatedUser ? query["relatedUser"] = relatedUser : ""
+       relatedEmployee ? query["relatedEmployee"] = relatedEmployee : ""
        console.log("query",query)
        let data = await Appointment
                         .find(query)
                         .populate("relatedEmployee")
                         .skip(skip)
-       count = await Appointment.find(query).count
+       let count = await Appointment.find(query).count()
        return res.status(200)
                  .send({
                     success: true,
                     data : data,
                     meta_data:{
-                        count: count,
+                        total_count: count,
                         rowPerPage : rowPerPage
                     }
                  })
