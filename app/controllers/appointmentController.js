@@ -69,6 +69,25 @@ exports.createAppointment = async (req,res,next) => {
 }
 
 exports.updateAppointment = async (req,res) => {
+    try {
+      let data = req.body
+      await Appointment.findByIdAndUpdate(req.params.id, data)
+      return res.status(200)
+                .send({
+                    success:true,
+                    message: "Successfully Edited"
+                })
+    }
+    catch(error){
+        return res.status(500)
+                  .send({
+                    error: true,
+                    message: error.message
+                  })
+    }
+}
+
+exports.updateReportAppointment = async (req,res) => {
     try { 
     let { report } = req.body
     let data = { status: true }
@@ -79,7 +98,7 @@ exports.updateAppointment = async (req,res) => {
     return res.status(200)
               .send({
                 success: true,
-                message: "Successfully Updated"
+                message: "Successfully Reported"
                     })
 
     }
