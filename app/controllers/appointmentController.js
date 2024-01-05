@@ -67,3 +67,40 @@ exports.createAppointment = async (req,res,next) => {
                     })
     }
 }
+
+exports.updateAppointment = async (req,res) => {
+    try { 
+    let { report } = req.body
+    let data = { status: true }
+    report ? data.report = report : null
+    let appointData = await Appointment.findByIdAndUpdate(req.params.id,
+                                        data
+                                       )
+    return res.status(200)
+              .send({
+                success: true,
+                message: "Successfully Updated"
+                    })
+
+    }
+    catch(error){
+        return res.status(500)
+                  .send({
+                    error: true,
+                    message: error.message
+                  })
+    }
+   
+}
+
+exports.deleteAppointment = async (req,res,next) => {
+    await Appointment.findByIdAndUpdate(req.params.id,
+                                          {
+                                            isDeleted: true
+                                          })
+    return res.status(200)
+              .send({
+                success: true,
+                message: "Successfully Deleted"
+              })
+}
