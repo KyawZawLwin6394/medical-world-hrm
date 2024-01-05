@@ -31,8 +31,6 @@ exports.listAllAttendances = async (req, res) => {
   let count = 0
   let page = 0  
   
-  fromDate ? fromDate = new Date(fromDate) : ""
-  toDate ? toDate = new Date(toDate) : ""
  // console.log("department is "+relatedDepartment+" "+type+" "+fromDate+" "+toDate)
   try {
    // limit = +limit <= 100 ? +limit : 10
@@ -42,9 +40,9 @@ exports.listAllAttendances = async (req, res) => {
     role ? (query['role'] = role.toUpperCase()) : ''  
     relatedDepartment  ? (query['relatedDepartment'] = relatedDepartment) : ""
     type ? (query['type'] = type ) : ""
-    fromDate && toDate ? ( query["date"] = {"$gte": fromDate,"$lte": toDate}) 
-                        : fromDate ? ( query["date"] = {"$gte": fromDate}) 
-                        : toDate ? ( query["date"] = {"$lte": toDate}) 
+    fromDate && toDate ? ( query["date"] = {"$gte":  new Date(fromDate) ,"$lte": new Date(toDate) }) 
+                        : fromDate ? ( query["date"] = {"$gte": new Date(fromDate) }) 
+                        : toDate ? ( query["date"] = {"$lte": new Date(toDate) }) 
                         : ""
     relatedUser ? (query['relatedUser'] = relatedUser) : ""
     keyword && /\w/.test(keyword)
@@ -54,9 +52,7 @@ exports.listAllAttendances = async (req, res) => {
     regexKeyword ? (query['name'] = regexKeyword) : ''
 
     console.log("queery is ",query)
-    let result = await Attendance.find(query)
-      .skip(skip)
-      .populate('relatedDepartment relatedUser') 
+    let result = await Attendance.find(query).skip(skip).populate('relatedDepartment relatedUser') 
       //.limit(limit)
     count = await Attendance.find(query).count()
     const division = count / (rowsPerPage ) //|| limit)
