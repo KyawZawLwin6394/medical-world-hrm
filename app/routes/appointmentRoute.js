@@ -15,7 +15,8 @@ module.exports = (app) =>{
     app
     .route("/api/appointment/:id")
     .get(verifyToken, upload, catchError(appointment.getAppointmentById))
-    .put(verifyToken , upload, catchError(appointment.deleteAppointment))
+    .put(verifyToken , upload, catchError(appointment.updateAppointment))
+    .delete(verifyToken , upload, catchError(appointment.deleteAppointment))
     
     app
     .route("/api/appointment/check-in/:id")
@@ -25,9 +26,6 @@ module.exports = (app) =>{
     .route("/api/appointment/check-out/:id")
     .put(verifyToken , upload, catchError(appointment.checkOutAppointment))
 
-    app
-    .route("/api/appointment/edit/:id")
-    .put(verifyToken , upload, catchError(appointment.updateAppointment))
 
     app
     .route("/api/appointment/report/:id")
