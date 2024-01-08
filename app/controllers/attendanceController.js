@@ -309,7 +309,7 @@ exports.mobileCheckIn = async (req, res) => {
         })
         return res.status(200).send({ success: true, message: 'Within 300 meter', data: result })
       } else {
-        return res.status(200).send({ error: true, message: `Out of Bound for this Address:${getSetting.refAddress}, Please Try Again!` })
+        return res.status(200).send({ error: true, message: `Out of Bound for this Address. Please Try Again!` })
       }
     }
     else {

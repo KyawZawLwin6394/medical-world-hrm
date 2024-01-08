@@ -31,6 +31,8 @@ var storage = multer.diskStorage({
             cb(null, './uploads/hrm/employee/attach');
         } else if (file.fieldname === "attendanceImport") {
             cb(null, './uploads/hrm/employee/attendanceImport');
+        } else if (file.fieldname === "field"){
+            cb(null, "./uploads/hrm/employee/field")
         }
 
 
@@ -55,6 +57,8 @@ var storage = multer.diskStorage({
             cb(null, "LA-" + name + randomText + Date.now() + "." + ext)
         } else if (file.fieldname === "attendanceImport") {
             cb(null, "AI-" + name + randomText + Date.now() + "." + ext)
+        } else if(file.filename === "field"){
+            cb(null, "Field-"+ name + randomText + Date.now() + "."+ ext)
         }
 
 
