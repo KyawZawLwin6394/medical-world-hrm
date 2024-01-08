@@ -36,6 +36,14 @@ const AppointmentSchema = new Schema({
     description: {
         type: String
     },
+    checkIn: {
+        type: Boolean,
+        default: false
+    },
+    checkOut: {
+        type: Boolean,
+        default: false
+    },
     report: {
         type: String,
         default: null

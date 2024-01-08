@@ -111,7 +111,8 @@ exports.deleteAttendance = async (req, res, next) => {
     )
     return res
       .status(200)
-      .send({ success: true, data: { isDeleted: result.isDeleted } })
+      .send({ success
+        : true, data: { isDeleted: result.isDeleted } })
   } catch (error) {
     return res.status(500).send({ error: true, message: error.message })
   }

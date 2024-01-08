@@ -68,6 +68,67 @@ exports.createAppointment = async (req,res,next) => {
     }
 }
 
+exports.checkInAppointment = async (req,res) => {
+    try{
+       let findAppointment = await Appointment.findOne({ _id: req.params.id})
+          switch ( findAppointment && findAppointment.checkIn  ){
+             case false:
+               console.log("this is test",req.params.id) 
+                await Appointment.findByIdAndUpdate(req.params.id, { checkIn: true })
+                return res.status(200).send({
+                    success:true,
+                    message: " User successfully checked In"
+                })
+            case true :
+                return res.status(500).send({
+                    error: true,
+                    message: "User already checked In."
+                })
+          } 
+          return res.status(500).send({
+            error:true,
+            message: "There is no appointment"
+          })   
+       
+       
+    }catch(error){
+        return res.status(500)
+                  .send({
+                         error:true,
+                         message:error.message
+                    })
+    } 
+}
+
+exports.checkOutAppointment = async (req,res) => {
+    try{
+        let findAppointment = await Appointment.findOne({ _id: req.params.id})
+           switch ( findAppointment && findAppointment.checkOut ){
+              case false :
+                 await Appointment.findByIdAndUpdate(req.params.id, { checkOut: true })
+                 return res.status(200).send({
+                     success:true,
+                     message: " User successfully checked Out"
+                 })
+             case true :
+                 return res.status(500).send({
+                     error: true,
+                     message: "User already checked Out."
+                 })
+           }  
+           return res.status(500).send({
+            error:true,
+            message: "There is no appointment"
+          })        
+     }catch(error){
+         return res.status(500)
+                   .send({
+                          error:true,
+                          message:error.message
+                     })
+     } 
+}
+
 exports.updateAppointment = async (req,res) => {
     try {
       let data = req.body
