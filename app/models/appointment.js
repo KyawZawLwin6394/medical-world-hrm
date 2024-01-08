@@ -40,9 +40,17 @@ const AppointmentSchema = new Schema({
         type: Boolean,
         default: false
     },
+    checkInTime: {
+        type: String,
+        default: null
+    },
     checkOut: {
         type: Boolean,
         default: false
+    },
+    checkOutTime: {
+        type: String,
+        default: null
     },
     report: {
         type: String,

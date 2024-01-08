@@ -14,6 +14,7 @@ module.exports = (app) =>{
 
     app
     .route("/api/appointment/:id")
+    .get(verifyToken, upload, catchError(appointment.getAppointmentById))
     .put(verifyToken , upload, catchError(appointment.deleteAppointment))
     
     app

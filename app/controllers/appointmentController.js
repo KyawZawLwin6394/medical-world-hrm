@@ -68,13 +68,32 @@ exports.createAppointment = async (req,res,next) => {
     }
 }
 
+exports.getAppointmentById = async (req,res) => {
+    try {
+        let getAppointmentByid = await Appointment.findById(req.params.id).populate("relatedEmployee")
+        return res.status(200)
+                  .send({
+                    success: true,
+                    data: getAppointmentByid
+                  })
+        }
+    catch (error){
+        return res.status(500)
+                  .send({
+                         error:true,
+                         message:error.message
+                    })
+    }
+}
+
 exports.checkInAppointment = async (req,res) => {
     try{
+       let { checkIn } = req.body
        let findAppointment = await Appointment.findOne({ _id: req.params.id})
           switch ( findAppointment && findAppointment.checkIn  ){
              case false:
                console.log("this is test",req.params.id) 
-                await Appointment.findByIdAndUpdate(req.params.id, { checkIn: true })
+                await Appointment.findByIdAndUpdate(req.params.id, { checkIn: true,  checkInTime: checkIn  })
                 return res.status(200).send({
                     success:true,
                     message: " User successfully checked In"
@@ -102,10 +121,11 @@ exports.checkInAppointment = async (req,res) => {
 
 exports.checkOutAppointment = async (req,res) => {
     try{
+        let { checkOut } = req.body
         let findAppointment = await Appointment.findOne({ _id: req.params.id})
            switch ( findAppointment && findAppointment.checkOut ){
               case false :
-                 await Appointment.findByIdAndUpdate(req.params.id, { checkOut: true })
+                 await Appointment.findByIdAndUpdate(req.params.id, { checkOut: true, checkOutTime: checkOut })
                  return res.status(200).send({
                      success:true,
                      message: " User successfully checked Out"
