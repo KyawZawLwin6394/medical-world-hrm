@@ -292,13 +292,11 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 exports.mobileCheckIn = async (req, res) => {
   try {
-    const { targetLat, targetLon, relatedEmployee, relatedDepartment, clockIn, date } = req.body
+    const { targetLat, targetLon, relatedEmployee, relatedDepartment, clockIn, date, referenceLat, referenceLon } = req.body
     console.log(Config.settingID, 'id')
-    const getSetting = await Setting.findOne({ _id: Config.settingID })
-    if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
-    if (getSetting.referenceLat && getSetting.referenceLon) {
-      const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
-      if (distance <= 300) {
+    if( referenceLat && referenceLon ){
+      const distance = calculateDistance( referenceLat, referenceLon, targetLat, targetLon);
+      if (distance <=300){
         const result = await Attendance.create({
           relatedUser: relatedEmployee,
           relatedDepartment: relatedDepartment,
@@ -314,6 +312,29 @@ exports.mobileCheckIn = async (req, res) => {
         return res.status(200).send({ error: true, message: `Out of Bound for this Address:${getSetting.refAddress}, Please Try Again!` })
       }
     }
+    else {
+        const getSetting = await Setting.findOne({ _id: Config.settingID })
+        if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
+        if (getSetting.referenceLat && getSetting.referenceLon) {
+          const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
+          if (distance <= 300) {
+            const result = await Attendance.create({
+              relatedUser: relatedEmployee,
+              relatedDepartment: relatedDepartment,
+              date: date,
+              clockIn: clockIn,
+              isPaid: true,
+              type: 'Attend',
+              source: 'Field',
+              attendType: "Week Day"
+            })
+            return res.status(200).send({ success: true, message: 'Within 300 meter', data: result })
+          } else {
+            return res.status(200).send({ error: true, message: `Out of Bound for this Address:${getSetting.refAddress}, Please Try Again!` })
+          }
+        }
+    }
+  
   } catch (error) {
     return res.status(500).send({ error: true, message: error.message })
   }
