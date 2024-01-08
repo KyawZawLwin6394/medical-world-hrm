@@ -342,18 +342,29 @@ exports.mobileCheckIn = async (req, res) => {
 
 exports.mobileCheckOut = async (req, res) => {
   try {
-    const { targetLat, targetLon, attendaceID, clockOut } = req.body
-    const getSetting = await Setting.findOne({ _id: Config.settingID })
-    if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
-    if (getSetting.referenceLat && getSetting.referenceLon) {
-      const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
-      if (distance <= 300) {
+    const { targetLat, targetLon, attendaceID, clockOut, referenceLat, referenceLon } = req.body
+    if( referenceLat && referenceLon ){
+      const distance = calculateDistance( referenceLat, referenceLon, targetLat, targetLon);
+      if (distance <=300){
         const result = await Attendance.findOneAndUpdate({ _id: attendaceID }, { clockOut: clockOut }, { new: true }).populate('relatedUser relatedDepartment')
         return res.status(200).send({ success: true, message: 'Within 300 meter', data: result })
       } else {
-        return res.status(200).send({ error: true, message: `Out of Bound for this Address:${getSetting.refAddress}, Please Try Again!` })
+        return res.status(200).send({ error: true, message: `Out of Bound for this Address. Please Try Again!` })
+      }
+    } else {
+      const getSetting = await Setting.findOne({ _id: Config.settingID })
+      if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
+      if (getSetting.referenceLat && getSetting.referenceLon) {
+        const distance = calculateDistance(getSetting.referenceLat, getSetting.referenceLon, targetLat, targetLon);
+        if (distance <= 300) {
+          const result = await Attendance.findOneAndUpdate({ _id: attendaceID }, { clockOut: clockOut }, { new: true }).populate('relatedUser relatedDepartment')
+          return res.status(200).send({ success: true, message: 'Within 300 meter', data: result })
+        } else {
+          return res.status(200).send({ error: true, message: `Out of Bound for this Address. Please Try Again!` })
+        }
       }
     }
+   
 
   } catch (error) {
     return res.status(500).send({ error: true, message: error.message })
