@@ -171,7 +171,10 @@ exports.updateAppointment = async (req,res) => {
 exports.updateReportAppointment = async (req,res) => {
     try { 
     let { report } = req.body
-    let data = { status: true }
+    let file = req.file
+    console.log("file is ",file)
+    let url = file.path.split("hrm")[1]
+    let data = { status: true, attachFile: url }
     report ? data.report = report : null
     let appointData = await Appointment.findByIdAndUpdate(req.params.id,
                                         data

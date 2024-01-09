@@ -2,6 +2,7 @@ const { catchError } = require("../lib/errorHandler")
 const appointment = require("../controllers/appointmentController")
 const verifyToken = require("../lib/verifyToken")
 const { upload } = require("../lib/fieldUploader")
+const { singleFileUpload } = require("../lib/singlefileUploader")
 
 module.exports = (app) =>{
     app
@@ -29,5 +30,5 @@ module.exports = (app) =>{
 
     app
     .route("/api/appointment/report/:id")
-    .put(verifyToken, upload, catchError(appointment.updateReportAppointment))
+    .put(verifyToken, singleFileUpload.single("reportFile"), catchError(appointment.updateReportAppointment))
 }

@@ -38,6 +38,7 @@ var storage = multer.diskStorage({
 
     },
     filename: function (req, file, cb) {
+        console.log("file is ", file)
         let name = file.originalname.split(".")[0];
         let ext = file.originalname.split(".")[1];
         const randomText = getRandomText();
@@ -58,6 +59,7 @@ var storage = multer.diskStorage({
         } else if (file.fieldname === "attendanceImport") {
             cb(null, "AI-" + name + randomText + Date.now() + "." + ext)
         } else if(file.filename === "field"){
+            
             cb(null, "Field-"+ name + randomText + Date.now() + "."+ ext)
         }
 
