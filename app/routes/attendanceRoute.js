@@ -3,6 +3,7 @@
 const attendance = require('../controllers/attendanceController')
 const { catchError } = require('../lib/errorHandler')
 const { upload } = require('../lib/fieldUploader')
+const { singleFileUpload } = require('../lib/singlefileUploader')
 const verifyToken = require('../lib/verifyToken')
 
 module.exports = app => {
@@ -40,5 +41,5 @@ module.exports = app => {
 
   app.route('/api/attendances/mobile/check-in')
     .post(verifyToken, catchError(attendance.mobileCheckIn))
-    .put(verifyToken, catchError(attendance.mobileCheckOut))
+    .put( verifyToken,singleFileUpload.single("reportFile"), catchError(attendance.mobileCheckOut))
 }

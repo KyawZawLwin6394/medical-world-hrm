@@ -292,14 +292,17 @@ function calculateDistance(lat1, lon1, lat2, lon2) {
 
 exports.mobileCheckIn = async (req, res) => {
   try {
-    const { targetLat, targetLon, relatedEmployee, relatedDepartment, clockIn, date, referenceLat, referenceLon } = req.body
+    const { checkInLat, checkInLong, targetLat, targetLon, relatedEmployee, relatedDepartment, clockIn, date, referenceLat, referenceLon, outsideOffice} = req.body
     console.log(Config.settingID, 'id')
-    if( referenceLat && referenceLon ){
-      const distance = calculateDistance( referenceLat, referenceLon, targetLat, targetLon);
-      if (distance <=300){
+    console.log("check in is ", outsideOffice)
+    if( outsideOffice ){
+        //  if the employee is outside office   
         const result = await Attendance.create({
           relatedUser: relatedEmployee,
           relatedDepartment: relatedDepartment,
+          checkInLat: checkInLat,
+          checkInLong: checkInLong,
+          outsideOffice: outsideOffice,
           date: date,
           clockIn: clockIn,
           isPaid: true,
@@ -308,10 +311,7 @@ exports.mobileCheckIn = async (req, res) => {
           attendType: "Week Day"
         })
         return res.status(200).send({ success: true, message: 'Within 300 meter', data: result })
-      } else {
-        return res.status(200).send({ error: true, message: `Out of Bound for this Address. Please Try Again!` })
       }
-    }
     else {
         const getSetting = await Setting.findOne({ _id: Config.settingID })
         if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })
@@ -341,16 +341,23 @@ exports.mobileCheckIn = async (req, res) => {
 }
 
 exports.mobileCheckOut = async (req, res) => {
+  console.log("outside offic ",req.body)
   try {
-    const { targetLat, targetLon, attendaceID, clockOut, referenceLat, referenceLon } = req.body
-    if( referenceLat && referenceLon ){
-      const distance = calculateDistance( referenceLat, referenceLon, targetLat, targetLon);
-      if (distance <=300){
-        const result = await Attendance.findOneAndUpdate({ _id: attendaceID }, { clockOut: clockOut }, { new: true }).populate('relatedUser relatedDepartment')
-        return res.status(200).send({ success: true, message: 'Within 300 meter', data: result })
-      } else {
-        return res.status(200).send({ error: true, message: `Out of Bound for this Address. Please Try Again!` })
-      }
+    const { targetLat, targetLon, attendaceID, clockOut, referenceLat, referenceLon, checkOutLat, checkOutLong, report, outsideOffice } = req.body
+    let file
+    let url
+    let data = { clockOut: clockOut }
+    report ? data.report = report : null
+    checkOutLat ? data.checkOutLat = checkOutLat : null
+    checkOutLong ? data.checkOutLong = checkOutLong : null
+    if(req.file) {
+      file = req.file;
+      url = file.path.split("hrm")[1]
+      data.attachFile = url
+    }
+    if( outsideOffice ){
+        const result = await Attendance.findOneAndUpdate({ _id: attendaceID }, data , { new: true }).populate('relatedUser relatedDepartment')
+        return res.status(200).send({ success: true, message: 'Within 300 meter', data: result });
     } else {
       const getSetting = await Setting.findOne({ _id: Config.settingID })
       if (getSetting === undefined) return res.status(200).send({ error: true, message: 'Setting Not Found!' })

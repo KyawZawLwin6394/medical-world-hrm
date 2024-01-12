@@ -23,6 +23,34 @@ let AttendanceSchema = new Schema({
     type: mongoose.Schema.Types.ObjectId,
     ref: 'Users'
   },
+  checkInLat: {
+    type: String,
+    default: null
+  },
+  checkInLong: {
+    type: String,
+    default: null
+  },
+  checkOutLat: {
+    type: String,
+    default: null
+  },
+  checkOutLong: {
+    type: String,
+    default: null
+  },
+  outsideOffice: {
+    type: Boolean,
+    default: false
+  },
+  attachFile: {
+    type:String,
+    default: null
+  },
+  report: {
+    type:String,
+    default: null
+  },
   attendType: {
     type: String,
     enum: ['Week Day', 'Day Off', 'Holiday']
